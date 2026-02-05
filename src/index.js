@@ -1,5 +1,5 @@
 import express from "express";
-import matchesRouter from "./routes/matches.js";
+import { matchesRouter } from "./routes/matches.js";
 const app = express();
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
