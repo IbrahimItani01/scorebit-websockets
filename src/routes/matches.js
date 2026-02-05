@@ -30,7 +30,7 @@ matchesRouter.get("/", async (req, res) => {
 	} catch (error) {
 		return res
 			.status(500)
-			.json({ error: "Internal Server Error", details: JSON.stringify(error) });
+			.json({ error: "Internal Server Error", details: JSON.stringify(error.message) });
 	}
 });
 
@@ -61,6 +61,6 @@ matchesRouter.post("/", async (req, res) => {
 	} catch (error) {
 		return res
 			.status(500)
-			.json({ error: "Internal Server Error", details: JSON.stringify(error) });
+			.json({ error: "Internal Server Error", details: JSON.stringify(error.message) });
 	}
 });
