@@ -1,0 +1,1 @@
+export const MAX_MATCHES_LIMIT = 100;
