@@ -17,24 +17,42 @@ export const attachWebsocketServer = async (server) => {
 		path: "/ws",
 		maxPayload: 1024 * 1024,
 	});
-	wsServer.on("connection", async (socket, req) => {
-		if (wsArcjet) {
-			try {
-				const decision = await wsArcjet.protect(req);
-				if (decision.isDenied()) {
-					const code = decision.reason.isRateLimit() ? 1013 : 1008;
-					const reason = decision.reason.isRateLimit()
-						? "Rate limit exceeded"
-						: "Connection denied";
-					socket.close(code, reason);
-					return;
-				}
-			} catch (error) {
-				console.error("WebSocket security error:", error);
-				socket.close(1011, "Server Security error");
+	// Validate upgrade requests before WebSocket handshake using Arcjet
+	server.on("upgrade", async (req, socket, head) => {
+		if (!wsArcjet) {
+			wsServer.handleUpgrade(req, socket, head, (ws) =>
+				wsServer.emit("connection", ws, req)
+			);
+			return;
+		}
+		try {
+			const decision = await wsArcjet.protect(req);
+			if (decision.isDenied()) {
+				const isRate = decision.reason && decision.reason.isRateLimit && decision.reason.isRateLimit();
+				const status = isRate ? 429 : 403;
+				const statusText = isRate ? "Too Many Requests" : "Forbidden";
+				const body = isRate ? "Rate limit exceeded" : "Access denied";
+				const res = `HTTP/1.1 ${status} ${statusText}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: ${Buffer.byteLength(body)}\r\nConnection: close\r\n\r\n${body}`;
+				socket.write(res);
+				socket.destroy();
 				return;
 			}
+			wsServer.handleUpgrade(req, socket, head, (ws) =>
+				wsServer.emit("connection", ws, req)
+			);
+		} catch (error) {
+			console.error("WebSocket security error:", error);
+			try {
+				const body = "Server Security error";
+				const res = `HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: ${Buffer.byteLength(body)}\r\nConnection: close\r\n\r\n${body}`;
+				socket.write(res);
+			} catch (e) {}
+			socket.destroy();
 		}
+	});
+	wsServer.on("connection", async (socket, req) => {
+		// Arcjet protection moved to the HTTP `upgrade` event to validate
+		// requests before the WebSocket handshake.
 		sendJSON(socket, { type: "welcome" });
 
 		socket.on("error", (error) => {
