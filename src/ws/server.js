@@ -21,14 +21,17 @@ export const attachWebsocketServer = async (server) => {
 	server.on("upgrade", async (req, socket, head) => {
 		if (!wsArcjet) {
 			wsServer.handleUpgrade(req, socket, head, (ws) =>
-				wsServer.emit("connection", ws, req)
+				wsServer.emit("connection", ws, req),
 			);
 			return;
 		}
 		try {
 			const decision = await wsArcjet.protect(req);
 			if (decision.isDenied()) {
-				const isRate = decision.reason && decision.reason.isRateLimit && decision.reason.isRateLimit();
+				const isRate =
+					decision.reason &&
+					decision.reason.isRateLimit &&
+					decision.reason.isRateLimit();
 				const status = isRate ? 429 : 403;
 				const statusText = isRate ? "Too Many Requests" : "Forbidden";
 				const body = isRate ? "Rate limit exceeded" : "Access denied";
@@ -38,7 +41,7 @@ export const attachWebsocketServer = async (server) => {
 				return;
 			}
 			wsServer.handleUpgrade(req, socket, head, (ws) =>
-				wsServer.emit("connection", ws, req)
+				wsServer.emit("connection", ws, req),
 			);
 		} catch (error) {
 			console.error("WebSocket security error:", error);
