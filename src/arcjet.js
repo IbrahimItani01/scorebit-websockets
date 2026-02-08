@@ -1,7 +1,6 @@
 import arcjet, {
 	shield,
 	detectBot,
-	tokenBucket,
 	slidingWindow,
 } from "@arcjet/node";
 
@@ -11,7 +10,7 @@ const mode = process.env.ARCJET_MODE === "DRY_RUN" ? "DRY_RUN" : "LIVE";
 if (!arcjetKey)
 	throw new Error("ARCJET_KEY is not defined in environment variables");
 
-export const httpArcjet = arcjet
+export const httpArcjet = arcjetKey
 	? arcjet({
 			key: arcjetKey,
 			rules: [
@@ -30,7 +29,7 @@ export const httpArcjet = arcjet
 		})
 	: null;
 
-export const wsArcjet = arcjet
+export const wsArcjet = arcjetKey
 	? arcjet({
 			key: arcjetKey,
 			rules: [
