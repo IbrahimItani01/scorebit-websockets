@@ -16,10 +16,10 @@ export const httpArcjet = arcjetKey
 			rules: [
 				shield({ mode }),
 				// Create a bot detection rule
-				detectBot({
-					mode,
-					allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:PREVIEW"],
-				}),
+				// detectBot({
+				// 	mode,
+				// 	allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:PREVIEW"],
+				// }),
 				slidingWindow({
 					mode,
 					interval: "10s",
@@ -35,10 +35,10 @@ export const wsArcjet = arcjetKey
 			rules: [
 				shield({ mode }),
 				// Create a bot detection rule
-				detectBot({
-					mode,
-					allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:PREVIEW"],
-				}),
+				// detectBot({
+				// 	mode,
+				// 	allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:PREVIEW"],
+				// }),
 				slidingWindow({
 					mode,
 					interval: "2s",
