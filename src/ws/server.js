@@ -31,7 +31,7 @@ const sendJSON = (socket, payload) => {
 };
 const broadcastToAll = (wsServer, payload) => {
 	for (const client of wsServer.clients) {
-		if (client.readyState !== WebSocket.OPEN) return;
+		if (client.readyState !== WebSocket.OPEN) continue;
 		client.send(JSON.stringify(payload));
 	}
 };
