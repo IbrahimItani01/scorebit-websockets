@@ -1,5 +1,5 @@
 {
-	"licenseKey": "",
+	"licenseKey": "APMINSIGHT_LICENSE_KEY",
 	"appName": "scorebit",
 	"port": 10000
 }
